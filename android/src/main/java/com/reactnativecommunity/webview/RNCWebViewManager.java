@@ -990,7 +990,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
       ((RNCWebView) webView).dispatchEvent(
         webView,
         new TopLoadingStartEvent(
-          webView.getId(),
+          RNCWebView.getId(webView),
           createWebViewEvent(webView, url)));
     }
 
@@ -1037,7 +1037,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
         ((RNCWebView) view).dispatchEvent(
           view,
           new TopShouldStartLoadWithRequestEvent(
-            view.getId(),
+            RNCWebView.getId(view),
             createWebViewEvent(view, url)));
         return true;
       }
@@ -1152,7 +1152,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
 
       ((RNCWebView) webView).dispatchEvent(
         webView,
-        new TopLoadingErrorEvent(webView.getId(), eventData));
+        new TopLoadingErrorEvent(RNCWebView.getId(webView), eventData));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -1170,7 +1170,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
 
         ((RNCWebView) webView).dispatchEvent(
           webView,
-          new TopHttpErrorEvent(webView.getId(), eventData));
+          new TopHttpErrorEvent(RNCWebView.getId(webView), eventData));
       }
     }
 
@@ -1202,7 +1202,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
 
       ((RNCWebView) webView).dispatchEvent(
           webView,
-          new TopRenderProcessGoneEvent(webView.getId(), event)
+          new TopRenderProcessGoneEvent(RNCWebView.getId(webView), event)
         );
 
         // returning false would crash the app.
@@ -1213,13 +1213,13 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
       ((RNCWebView) webView).dispatchEvent(
         webView,
         new TopLoadingFinishEvent(
-          webView.getId(),
+          RNCWebView.getId(webView),
           createWebViewEvent(webView, url)));
     }
 
     protected WritableMap createWebViewEvent(WebView webView, String url) {
       WritableMap event = Arguments.createMap();
-      event.putDouble("target", webView.getId());
+      event.putDouble("target", RNCWebView.getId(webView));
       // Don't use webView.getUrl() here, the URL isn't updated to the new value yet in callbacks
       // like onPageFinished
       event.putString("url", url);
@@ -1318,7 +1318,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
         return;
       }
       WritableMap event = Arguments.createMap();
-      event.putDouble("target", webView.getId());
+      event.putDouble("target", RNCWebView.getId(webView));
       event.putString("title", webView.getTitle());
       event.putString("url", url);
       event.putBoolean("canGoBack", webView.canGoBack());
@@ -1327,7 +1327,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
       ((RNCWebView) webView).dispatchEvent(
         webView,
         new TopLoadingProgressEvent(
-          webView.getId(),
+          RNCWebView.getId(webView),
           event));
     }
 
@@ -1671,7 +1671,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
         dispatchEvent(
           this,
           new ContentSizeChangeEvent(
-            this.getId(),
+            RNCWebView.getId(this),
             w,
             h
           )
@@ -1798,7 +1798,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
             if (mCatalystInstance != null) {
               mContext.sendDirectMessage("onMessage", data);
             } else {
-              dispatchEvent(webView, new TopMessageEvent(webView.getId(), data));
+              dispatchEvent(webView, new TopMessageEvent(RNCWebView.getId(webView), data));
             }
           }
         });
@@ -1809,7 +1809,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
         if (mCatalystInstance != null) {
           this.sendDirectMessage("onMessage", eventData);
         } else {
-          dispatchEvent(this, new TopMessageEvent(this.getId(), eventData));
+          dispatchEvent(this, new TopMessageEvent(RNCWebView.getId(this), eventData));
         }
       }
     }
@@ -1837,7 +1837,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
 
       if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
         ScrollEvent event = ScrollEvent.obtain(
-                this.getId(),
+                RNCWebView.getId(this),
                 ScrollEventType.SCROLL,
                 x,
                 y,
@@ -1870,6 +1870,13 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
         mWebChromeClient.onHideCustomView();
       }
       super.destroy();
+    }
+
+    /**
+     * A helper to get react tag id by given WebView
+     */
+    public static int getId(WebView webView) {
+      return ((View) webView.getParent()).getId();
     }
 
     protected class RNCWebViewBridge {
