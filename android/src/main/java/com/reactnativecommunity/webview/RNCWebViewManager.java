@@ -1569,6 +1569,9 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewManager.RNCWeb
   public static class RNCWebViewWrapper extends FrameLayout {
     RNCWebViewWrapper(Context context, RNCWebView webView) {
       super(context);
+      // We make the WebView as transparent on top of the container,
+      // and let React Native sets background color for the container.
+      webView.setBackgroundColor(Color.TRANSPARENT);
       addView(webView);
     }
 
